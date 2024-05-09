@@ -2,7 +2,7 @@ import React,{ useEffect, useContext, useState } from 'react';
 
 import Heart from '../../assets/Heart';
 import './Post.css';
-import { FirebaseContext } from '../../store/Context';
+import { AuthContext, FirebaseContext } from '../../store/Context';
 import { PostContext } from '../../store/PostContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -11,6 +11,7 @@ function Posts() {
   const [products, setProducts] = useState([]);
   const {firebase} = useContext(FirebaseContext);
   const {setPostDetails} = useContext(PostContext)
+  const {user} = useContext(AuthContext)
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,7 +25,7 @@ function Posts() {
         })
         setProducts(allPost)
       })
-  })
+  }, [])
 
   return (
     <div className="postParentDiv">

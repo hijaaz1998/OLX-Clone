@@ -13,9 +13,54 @@ export default function Signup() {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const {firebase} = useContext(FirebaseContext)
+  const [error, setError] = useState('');
 
   const handleSubmit = (e) => {
-    e.preventDefault()
+    e.preventDefault();
+
+    if (!username || !email || !phone || !password) {
+      setError('All fields are required');
+  
+      setTimeout(() => {
+        setError('');
+      }, 3000);
+  
+      return;
+    }
+  
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError('Invalid email address');
+  
+      setTimeout(() => {
+        setError('');
+      }, 3000);
+  
+      return;
+    }
+  
+    if (!/^\d+$/.test(phone)) {
+      setError('Invalid phone number');
+  
+      setTimeout(() => {
+        setError('');
+      }, 3000);
+  
+      return;
+    }
+  
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters');
+  
+      setTimeout(() => {
+        setError('');
+      }, 3000);
+  
+      return;
+    }
+  
+    setError('');
+
     firebase.auth().createUserWithEmailAndPassword(email, password)
       .then((result) => {
         result.user.updateProfile({displayName: username})
@@ -96,7 +141,8 @@ export default function Signup() {
           <br />
           <button>Signup</button>
         </form>
-        <a>Login</a>
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+        <a onClick={(() => navigate('/login'))}>Login</a>
       </div>
     </div>
   );

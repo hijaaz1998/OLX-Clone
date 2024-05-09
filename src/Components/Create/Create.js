@@ -15,15 +15,37 @@ const Create = () => {
   const [category, setCategory] = useState('')
   const [price, setPrice] = useState('')
   const [image, setImage] = useState(null)
+  const [error, setError] = useState('')
   const date = new Date()
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (!name || !category || !price || !image) {
+      setError('All fields are required');
+  
+      setTimeout(() => {
+        setError('');
+      }, 3000);
+  
+      return;
+    }
+
+    const parsedPrice = parseFloat(price);
+    if (isNaN(parsedPrice) || parsedPrice <= 0) {
+      setError('Price must be a positive number');
+
+      setTimeout(() => {
+        setError('');
+      }, 3000);
+
+      return;
+    }
+
     firebase.storage().ref(`/images/${image.name}`).put(image)
       .then( ({ref}) => {
         ref.getDownloadURL()
           .then( (url) => {
-            console.log("hellooooo",url);
             firebase.firestore().collection('products').add({
               name,
               category,
@@ -93,6 +115,7 @@ const Create = () => {
             <br />
             <button onClick={handleSubmit} className="uploadBtn">upload and Submit</button>
           </form>
+          {error && <p style={{ color: 'red' }}>{error}</p>}
         </div>
       </card>
     </Fragment>
